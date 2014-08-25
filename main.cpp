@@ -27,7 +27,7 @@ List *listLink(List *list, int item) {
 List *atkinSievePrimeGen(List *list, int min, int max) {
 	//Create the various different variables required
 	int root = ceil(sqrt(max));
-	bool sieve[max - min];
+	bool *sieve = new bool[max-min];
 
 	for (int i = 0; i < (max - min); i++) {
 		sieve[i] = false;
@@ -67,6 +67,9 @@ List *atkinSievePrimeGen(List *list, int min, int max) {
 
 	if (min <= 3) {list = listLink(list, 3);}
 	if (min <= 2) {list = listLink(list, 2);}
+
+	// free array
+	delete[] sieve;
 
 	return list;
 }
