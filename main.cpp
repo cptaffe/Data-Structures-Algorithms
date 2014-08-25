@@ -146,8 +146,8 @@ List *shrinkList(List *list, int max) {
 #include <limits>
 
 int main() {
-	int num, last_num;
-	last_num = 1;
+	int num = 0;
+	int last_num = 1;
 	List *primes = initStack(1);
 	while (true) {
 		cout << "enter max num:\n";
