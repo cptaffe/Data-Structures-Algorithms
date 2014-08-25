@@ -16,50 +16,66 @@ typedef struct {
 	int data;
 } List;
 
-List *listLink(List *list, int item) {
+typedef unsigned long long _uint;
+
+void error (const char *str) {
+	cout << "Err: " << str << endl;
+	exit(1);
+}
+
+List *listLink(List *list, _uint item) {
 	List *new_list = new List;
+	if (new_list == NULL) {
+		error("listLink: new_list did not allocate");
+	}
 	new_list->data = item;
 	new_list->link = NULL;
 	list->link = new_list;
 	return new_list;
 }
 
-List *atkinSievePrimeGen(List *list, int min, int max) {
+List *atkinSievePrimeGen(List *list, _uint min, _uint max) {
 	//Create the various different variables required
 	int root = ceil(sqrt(max));
-	bool *sieve = new bool[max-min];
+	bool *sieve = new bool[max - min];
 
-	for (int i = 0; i < (max - min); i++) {
+	if (sieve == NULL) {
+		error("atkinSievePrimeGen: sieve did not allocate");
+	}
+
+	for (uint i = 0; i < (max - min); i++) {
 		sieve[i] = false;
 	}
 
-	for (int x = 1; x <= root; x++) {
-		for (int y = 1; y <= root; y++) {
-			int n = (4 * x * x) + (y * y);
-			if (n <= max && (n % 12 == 1 || n % 12 == 5)) {
-				sieve[n - min] ^= true;
+	for (_uint x = 1; x <= root; x++) {
+		for (_uint y = 1; y <= root; y++) {
+			_uint n = (4 * x * x) + (y * y);
+			if (n <= max && n > min && (n % 12 == 1 || n % 12 == 5)) {
+					sieve[n - min] ^= true;
 			}
 			n = (3 * x * x) + (y * y);
-			if (n <= max && n % 12 == 7) {
-				sieve[n - min] ^= true;
+			if (n <= max && n > min && n % 12 == 7) {
+				if ((n-min) > 0 && (n-min) < (max - min)){
+					sieve[n - min] ^= true;
+				}
 			}
 			n = (3 * x * x) - (y * y);
-			if (x > y && n <= max && n % 12 == 11) {
-				sieve[n - min] ^= true;
+			if (x > y && n <= max && n > min && n % 12 == 11) {
+					sieve[n - min] ^= true;
 			}
 		}
 	}
 
 	//Mark all multiples of squares as non-prime
-	for (int i = min; i <= root; i++) {
+	for (_uint i = min; i <= root; i++) {
 		if (sieve[i - min]) {
-			for (int j = i * i; j < max; j += i * i) {
+			for (_uint j = i * i; j < max; j += i * i) {
 				sieve[j - min] = false;
 			}
 		}
 	}
 
-	for (int i = max; i > min; i--) {
+	for (_uint i = max; i > min; i--) {
 		if (sieve[i - min]) {
 			list = listLink(list, i);
 		}
@@ -75,13 +91,16 @@ List *atkinSievePrimeGen(List *list, int min, int max) {
 }
 
 // prime generation wrapper
-List *genPrimes(int max, int min, List *list) {
+List *genPrimes(_uint max, _uint min, List *list) {
 	return atkinSievePrimeGen(list, min, max);
 }
 
-List *initStack(int num) {
+List *initStack() {
 	// calloc sets len/size to 0 and pointer to NULL
 	List *list = new List;
+	if (list == NULL) {
+		error("initStack: init list did not allocate");
+	}
 	list->link = NULL;
 	list->data = 0;
 	return list;
@@ -96,15 +115,31 @@ int freeList(List *list) {
 	return freeList(next);
 }
 
-void printList(List *list) {
+void print3List(List *list) {
 	if (list == NULL) {
 		cout << endl;
+		return;
 	}
-	else {
+	if (list->data != 0) {
+		cout << list->data << ", ";
+	}
+	print3List((List *) list->link);
+}
+
+// Iterative print to combat stack overflow
+void printList(List *list) {
+	//int count = 0;
+	for (; list != NULL; list = (List *) list->link) {
 		if (list->data != 0) {
-			cout << (int) list->data << ", ";
+			//if(count == 100) {
+				cout << list->data << ", ";
+				//count = 0;
+			//}
+			//count++;
 		}
-		printList((List *) list->link);
+	}
+	if (list == NULL) {
+		cout << endl;
 	}
 }
 
@@ -125,7 +160,7 @@ List *concatList(List *list, List *nlist) {
 	return concatList((List *) list->link, nlist);
 }
 
-List *freeValList(List *list, int n) {
+List *freeValList(List *list, uint n) {
 	if (list->data != 0 && list->data < n) {
 		return list;
 	}
@@ -134,31 +169,35 @@ List *freeValList(List *list, int n) {
 	return freeValList(next, n);
 }
 
-List *expandList(List *list, int max, int min) {
+List *expandList(List *list, _uint max, _uint min) {
 	// expands list, adding new primes
-	List *new_list = initStack(1);
+	List *new_list = initStack();
 	genPrimes(max, min, new_list);
 	concatList(new_list, list);
 	return new_list;
 }
 
-List *shrinkList(List *list, int max) {
+List *shrinkList(List *list, _uint max) {
 	return freeValList(list, max);
 }
 
-#include <limits>
-
 int main() {
-	int num = 0;
-	int last_num = 1;
-	List *primes = initStack(1);
+	_uint num = 0;
+	_uint last_num = 1;
+	List *primes = initStack();
 	while (true) {
 		cout << "enter max num:\n";
 		if (cin >> num) {
 			if (num <= 1) {break;}
 			cout << "number: " << num << endl;
 			if (num > last_num) {
-				primes = expandList(primes, num, last_num);
+				//primes = expandList(primes, num, last_num);
+				for (int i = (num - last_num) / 100; i > 0; i--) {
+					primes = expandList(primes, num - (100 * i), (num - (100 * i)) - 100);
+					cout << num - (100 * i) << ", " << (num - (100 * i)) - 100 << endl;
+				}
+				primes = expandList(primes, ((num - last_num) % 100) + (num - 100), (last_num) + (num - 100));
+				cout << ((num - last_num) % 100) + (num - 100) << ", " << ((last_num) + (num - 100)) << endl;
 			} else {
 				primes = shrinkList(primes, num);
 			}
