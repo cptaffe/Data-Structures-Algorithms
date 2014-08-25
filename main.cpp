@@ -19,13 +19,15 @@ typedef struct {
 typedef unsigned long long _uint;
 
 void error (const char *str) {
-	cout << "Err: " << str << endl;
+	cerr << "Err: " << str << endl;
 	exit(1);
 }
 
 List *listLink(List *list, _uint item) {
-	List *new_list = new List;
-	if (new_list == NULL) {
+	List *new_list;
+	try {
+		new_list = new List;
+	} catch (std::bad_alloc& ba) {
 		error("listLink: new_list did not allocate");
 	}
 	new_list->data = item;
@@ -37,9 +39,10 @@ List *listLink(List *list, _uint item) {
 List *atkinSievePrimeGen(List *list, _uint min, _uint max) {
 	//Create the various different variables required
 	int root = ceil(sqrt(max));
-	bool *sieve = new bool[max - min];
-
-	if (sieve == NULL) {
+	bool *sieve;
+	try {
+		sieve = new bool[max - min];
+	} catch (std::bad_alloc& ba) {
 		error("atkinSievePrimeGen: sieve did not allocate");
 	}
 
@@ -191,13 +194,14 @@ int main() {
 			if (num <= 1) {break;}
 			cout << "number: " << num << endl;
 			if (num > last_num) {
-				//primes = expandList(primes, num, last_num);
-				for (int i = (num - last_num) / 100; i > 0; i--) {
-					primes = expandList(primes, num - (100 * i), (num - (100 * i)) - 100);
-					cout << num - (100 * i) << ", " << (num - (100 * i)) - 100 << endl;
+				primes = expandList(primes, num, last_num);
+				/*for (int i = (num - last_num) / per_thread; i > 0; i--) {
+					primes = expandList(primes, num - (per_thread * i), (num - (per_thread * i)) - per_thread);
+					//cout << num - (per_thread * i) << ", " << (num - (per_thread * i)) - per_thread << endl;
 				}
-				primes = expandList(primes, ((num - last_num) % 100) + (num - 100), (last_num) + (num - 100));
-				cout << ((num - last_num) % 100) + (num - 100) << ", " << ((last_num) + (num - 100)) << endl;
+				primes = expandList(primes, ((num - last_num) % per_thread) + (num - per_thread), (last_num) + (num - per_thread));
+				//cout << ((num - last_num) % per_thread) + (num - per_thread) << ", " << ((last_num) + (num - per_thread)) << endl;
+				*/
 			} else {
 				primes = shrinkList(primes, num);
 			}
