@@ -27,9 +27,9 @@ List *listLink(List *list, int item) {
 List *atkinSievePrimeGen(List *list, int min, int max) {
 	//Create the various different variables required
 	int root = ceil(sqrt(max));
-	bool sieve[max];
+	bool sieve[max - min];
 
-	for (int i = 0; i < max; i++) {
+	for (int i = 0; i < (max - min); i++) {
 		sieve[i] = false;
 	}
 
@@ -37,30 +37,30 @@ List *atkinSievePrimeGen(List *list, int min, int max) {
 		for (int y = 1; y <= root; y++) {
 			int n = (4 * x * x) + (y * y);
 			if (n <= max && (n % 12 == 1 || n % 12 == 5)) {
-				sieve[n] ^= true;
+				sieve[n - min] ^= true;
 			}
 			n = (3 * x * x) + (y * y);
 			if (n <= max && n % 12 == 7) {
-				sieve[n] ^= true;
+				sieve[n - min] ^= true;
 			}
 			n = (3 * x * x) - (y * y);
 			if (x > y && n <= max && n % 12 == 11) {
-				sieve[n] ^= true;
+				sieve[n - min] ^= true;
 			}
 		}
 	}
 
 	//Mark all multiples of squares as non-prime
 	for (int i = min; i <= root; i++) {
-		if (sieve[i]) {
+		if (sieve[i - min]) {
 			for (int j = i * i; j < max; j += i * i) {
-				sieve[j] = false;
+				sieve[j - min] = false;
 			}
 		}
 	}
 
 	for (int i = max; i > min; i--) {
-		if (sieve[i]) {
+		if (sieve[i - min]) {
 			list = listLink(list, i);
 		}
 	}
@@ -82,6 +82,15 @@ List *initStack(int num) {
 	list->link = NULL;
 	list->data = 0;
 	return list;
+}
+
+int freeList(List *list) {
+	if (list == NULL) {
+		return 1;
+	}
+	List *next = (List *) list->link;
+	delete list;
+	return freeList(next);
 }
 
 void printList(List *list) {
@@ -143,6 +152,7 @@ int main() {
 	while (true) {
 		cout << "enter max num:\n";
 		if (cin >> num) {
+			if (num <= 1) {break;}
 			cout << "number: " << num << endl;
 			if (num > last_num) {
 				primes = expandList(primes, num, last_num);
@@ -156,6 +166,6 @@ int main() {
 			cin.clear(); cin.ignore(100, '\n');
 		}
 	}
-	delete primes;
+	freeList(primes);
 	return 0;
 }
