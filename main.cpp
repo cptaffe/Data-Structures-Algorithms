@@ -39,14 +39,15 @@ List *listLink(List *list, _uint item) {
 List *atkinSievePrimeGen(List *list, _uint min, _uint max) {
 	//Create the various different variables required
 	int root = ceil(sqrt(max));
+	const int sieve_size = max - (min - 1);
 	bool *sieve;
 	try {
-		sieve = new bool[max - min];
+		sieve = new bool[sieve_size];
 	} catch (std::bad_alloc& ba) {
 		error("atkinSievePrimeGen: sieve did not allocate");
 	}
 
-	for (uint i = 0; i < (max - min); i++) {
+	for (_uint i = 0; i < sieve_size; i++) {
 		sieve[i] = false;
 	}
 
@@ -100,8 +101,10 @@ List *genPrimes(_uint max, _uint min, List *list) {
 
 List *initStack() {
 	// calloc sets len/size to 0 and pointer to NULL
-	List *list = new List;
-	if (list == NULL) {
+	List *list;
+	try {
+		list = new List;
+	} catch (std::bad_alloc& ba) {
 		error("initStack: init list did not allocate");
 	}
 	list->link = NULL;
@@ -185,8 +188,8 @@ List *shrinkList(List *list, _uint max) {
 }
 
 int main() {
-	_uint num = 0;
-	_uint last_num = 1;
+	_uint num, last_num;
+	num = 0; last_num = 0;
 	List *primes = initStack();
 	while (true) {
 		cout << "enter max num:\n";
