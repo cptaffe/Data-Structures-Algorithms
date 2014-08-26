@@ -9,6 +9,10 @@
 #include <cmath>
 #include <cstdlib>
 
+// concurrent stuffs
+#include <thread>
+#include <future>
+
 using namespace std;
 
 typedef struct {
@@ -190,7 +194,6 @@ List *shrinkList(List *list, _uint max) {
 int main() {
 	_uint num, last_num;
 	num = 0; last_num = 0;
-	int per_thread = 10;
 	List *primes = initStack();
 	while (true) {
 		cout << "enter max num:\n";
@@ -198,25 +201,22 @@ int main() {
 			if (num <= 1) {break;}
 			cout << "number: " << num << endl;
 			if (num > last_num) {
-				primes = expandList(primes, num, last_num);
-				/*
-				per_thread = (num - last_num) / 4;
-				_uint max = ((num - last_num) / per_thread) - 1;
+				//primes = expandList(primes, num, last_num);
+				
+				// most probably working threadable bit.
+				const _uint max = ((num - last_num) / 104857600) + 1; // 100 mb
+				const _uint per_thread = (num - last_num) / max;
+				cout << "max: " << max << endl;
 				for (_uint i = max; i > 0; i--) {
-					const _uint top = num - (per_thread * i);
+					const _uint top = num - (per_thread * (i - 1));
 					cout << top << ", " << top - per_thread << endl;
 					primes = expandList(primes, top, top - per_thread);
 				}
-				if (num % per_thread != 0) {
-					cout << (num % per_thread) + max << ", " << last_num + max << endl;
-					primes = expandList(primes, (num % per_thread) + max, last_num + max);
-				}
-				*/
 			} else {
 				primes = shrinkList(primes, num);
 			}
 			last_num = num;
-			printList(primes);
+			//printList(primes);
 		} else {
 			cout << "err: not a number." << endl;
 			cin.clear(); cin.ignore(100, '\n');
