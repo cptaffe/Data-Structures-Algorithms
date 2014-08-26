@@ -85,8 +85,8 @@ List *atkinSievePrimeGen(List *list, _uint min, _uint max) {
 		}
 	}
 
-	if (min <= 3) {list = listLink(list, 3);}
-	if (min <= 2) {list = listLink(list, 2);}
+	if (min <= 3 && max > 3) {list = listLink(list, 3);}
+	if (min <= 2 && max > 2) {list = listLink(list, 2);}
 
 	// free array
 	delete[] sieve;
@@ -158,21 +158,21 @@ int lenList(List *list) {
 	}
 }
 
+// iterified concat list
 List *concatList(List *list, List *nlist) {
-	if (list->link == NULL) {
-		list->link = (void *) nlist;
-		return list;
-	}
-	return concatList((List *) list->link, nlist);
+	for (; list->link != NULL; list = (List *) list->link) {}
+	list->link = (void *) nlist;
+	return list;
 }
 
+// iterified frees
 List *freeValList(List *list, uint n) {
-	if (list->data != 0 && list->data < n) {
-		return list;
+	List *next = list;
+	for (;list->data == 0 || list->data > n; list = next) {
+		next = (List *) list->link;
+		delete list;
 	}
-	List *next = (List *) list->link;
-	delete list;
-	return freeValList(next, n);
+	return list;
 }
 
 List *expandList(List *list, _uint max, _uint min) {
@@ -190,6 +190,7 @@ List *shrinkList(List *list, _uint max) {
 int main() {
 	_uint num, last_num;
 	num = 0; last_num = 0;
+	int per_thread = 10;
 	List *primes = initStack();
 	while (true) {
 		cout << "enter max num:\n";
@@ -198,12 +199,18 @@ int main() {
 			cout << "number: " << num << endl;
 			if (num > last_num) {
 				primes = expandList(primes, num, last_num);
-				/*for (int i = (num - last_num) / per_thread; i > 0; i--) {
-					primes = expandList(primes, num - (per_thread * i), (num - (per_thread * i)) - per_thread);
-					//cout << num - (per_thread * i) << ", " << (num - (per_thread * i)) - per_thread << endl;
+				/*
+				per_thread = (num - last_num) / 4;
+				_uint max = ((num - last_num) / per_thread) - 1;
+				for (_uint i = max; i > 0; i--) {
+					const _uint top = num - (per_thread * i);
+					cout << top << ", " << top - per_thread << endl;
+					primes = expandList(primes, top, top - per_thread);
 				}
-				primes = expandList(primes, ((num - last_num) % per_thread) + (num - per_thread), (last_num) + (num - per_thread));
-				//cout << ((num - last_num) % per_thread) + (num - per_thread) << ", " << ((last_num) + (num - per_thread)) << endl;
+				if (num % per_thread != 0) {
+					cout << (num % per_thread) + max << ", " << last_num + max << endl;
+					primes = expandList(primes, (num % per_thread) + max, last_num + max);
+				}
 				*/
 			} else {
 				primes = shrinkList(primes, num);
