@@ -6,7 +6,7 @@
 // Project Descriptions: (maximum 5 lines)
 // This project is doing dynamic array expansion for storage of prime numbers.
 // Project Due Date: 28/8/2014
-// Project Revised Date: 28/8/2014
+// Project Revised Date: 4/9/2014
 
 #import "prime.h"
 #import "array.h"
@@ -26,10 +26,10 @@ int main() {
 		if (cin >> num) {
 			if (num <= 0) {break;}
 			if (num < old) {
-				arr.len = 0;
-				old = 0;
+				arr = *ArrayIndexlt(&arr, num);
+			} else {
+				PrimeGen(&arr, old, num);
 			}
-			PrimeGen(&arr, old, num);
 			ArrayPrint(&arr);
 			old = num;
 		} else {

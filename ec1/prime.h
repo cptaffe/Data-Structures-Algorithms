@@ -1,3 +1,13 @@
+// CPSC2380
+// Department of Computer Science, UALR
+// Project 1
+// Student Name: Connor Taffe
+// Student UALR ID (last four digits): 3742
+// Project Descriptions: (maximum 5 lines)
+// This project is doing dynamic array expansion for storage of prime numbers.
+// Project Due Date: 28/8/2014
+// Project Revised Date: 4/9/2014
+
 #include <cmath>
 #include <new>
 #import "array.h"
@@ -12,13 +22,13 @@ Array *PrimeGen(Array *array, int min, int max) {
 	try {
 		sieve = new bool[sieve_size];
 	} catch (std::bad_alloc& ba) {
-		//perror("atkinSievePrimeGen");
+		perror("PrimeGen new");
 		return array;
 	}
 
 	// account for 3 & 2
-	if (min <= 2 && max > 2) {array = ArrayPush(array, 2);}
-	if (min <= 3 && max > 3) {array = ArrayPush(array, 3);}
+	if (min < 2 && max >= 2) {array = ArrayPush(array, 2);}
+	if (min < 3 && max >= 3) {array = ArrayPush(array, 3);}
 
 	// init sieve w/ false
 	for (int i = 0; i < sieve_size; i++) {
@@ -55,7 +65,7 @@ Array *PrimeGen(Array *array, int min, int max) {
 	}
 
 	// add primes to array
-	for (int i = min; i < max; i++) {
+	for (int i = min; i <= max; i++) {
 		if (sieve[i - min]) {
 			array = ArrayPush(array, i);
 		}
