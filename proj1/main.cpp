@@ -24,7 +24,7 @@ int main() {
 	while (true) {
 		cout << "Input number" << endl;
 		if (cin >> num) {
-			if (num <= 0) {break;}
+			if (num <= 0) { cout << "0 or less, exiting" << endl; break; }
 			if (num < old) {
 				arr = *ArrayIndexlt(&arr, num);
 			} else {
@@ -33,7 +33,7 @@ int main() {
 			ArrayPrint(&arr);
 			old = num;
 		} else {
-			cout << "not a number" << endl;
+			cout << "not a number, exiting" << endl;
 			break;
 		}
 	}
