@@ -8,8 +8,8 @@
 // Project Due Date: 28/8/2014
 // Project Revised Date: 4/9/2014
 
-#import "prime.h"
-#import "array.h"
+#include "prime.h"
+#include "array.h"
 
 using namespace std;
 
@@ -40,4 +40,5 @@ int main() {
 	if (arr.nums != NULL) {
 		delete[] arr.nums;
 	}
+	return 0;
 }

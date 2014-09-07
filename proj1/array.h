@@ -8,6 +8,9 @@
 // Project Due Date: 28/8/2014
 // Project Revised Date: 4/9/2014
 
+#ifndef ARRAY
+#define ARRAY
+
 #include <iostream>
 
 using namespace std;
@@ -67,3 +70,5 @@ Array *ArrayIndexlt(Array *array, int n) {
 	}
 	return array;
 }
+
+#endif

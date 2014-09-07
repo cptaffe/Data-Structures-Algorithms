@@ -10,7 +10,7 @@
 
 #include <cmath>
 #include <new>
-#import "array.h"
+#include "array.h"
 
 using namespace std;
 
